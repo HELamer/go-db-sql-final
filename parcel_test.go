@@ -40,13 +40,13 @@ func TestAddGetDelete(t *testing.T) {
 	parcel := getTestParcel()
 
 	// add
-	lastId, err := store.Add(parcel)
+	parcel.Number, err = store.Add(parcel)
 
 	require.NoError(t, err)
-	require.NotEmpty(t, lastId)
+	require.NotEmpty(t, parcel.Number)
 
 	// get
-	getParcel, err := store.Get(lastId)
+	getParcel, err := store.Get(parcel.Number)
 
 	require.NoError(t, err)
 	require.Equal(t, parcel, getParcel)
@@ -54,10 +54,10 @@ func TestAddGetDelete(t *testing.T) {
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
-	deleteParcel := store.Delete(lastId)
+	deleteParcel := store.Delete(parcel.Number)
 
 	require.NoError(t, deleteParcel)
-	_, err = store.Get(lastId)
+	_, err = store.Get(parcel.Number)
 
 	require.Equal(t, sql.ErrNoRows, err)
 }
@@ -74,20 +74,20 @@ func TestSetAddress(t *testing.T) {
 	parcel := getTestParcel()
 
 	// add
-	lastId, err := store.Add(parcel)
+	parcel.Number, err = store.Add(parcel)
 
 	require.NoError(t, err)
-	require.NotEmpty(t, lastId)
+	require.NotEmpty(t, parcel.Number)
 
 	// set address
 	newAddress := "new test address"
 
-	setAddress := store.SetAddress(lastId, newAddress)
+	setAddress := store.SetAddress(parcel.Number, newAddress)
 
 	require.NoError(t, setAddress)
 
 	// check
-	address_check, err := store.Get(lastId)
+	address_check, err := store.Get(parcel.Number)
 
 	require.Equal(t, newAddress, address_check.Address)
 }
@@ -104,20 +104,20 @@ func TestSetStatus(t *testing.T) {
 	parcel := getTestParcel()
 
 	// add
-	lastId, err := store.Add(parcel)
+	parcel.Number, err = store.Add(parcel)
 
 	require.NoError(t, err)
-	require.NotEmpty(t, lastId)
+	require.NotEmpty(t, parcel.Number)
 
 	// set status
 	newStatus := ParcelStatusSent
 
-	setStatus := store.SetStatus(lastId, newStatus)
+	setStatus := store.SetStatus(parcel.Number, newStatus)
 
 	require.NoError(t, setStatus)
 
 	// check
-	status_check, err := store.Get(lastId)
+	status_check, err := store.Get(parcel.Number)
 
 	require.Equal(t, newStatus, status_check.Status)
 }

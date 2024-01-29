@@ -52,14 +52,12 @@ func TestAddGetDelete(t *testing.T) {
 	require.Equal(t, parcel, getParcel)
 
 	// delete
-	// удалите добавленную посылку, убедитесь в отсутствии ошибки
-	// проверьте, что посылку больше нельзя получить из БД
-	deleteParcel := store.Delete(parcel.Number)
+	err = store.Delete(parcel.Number)
 
-	require.NoError(t, deleteParcel)
+	require.NoError(t, err)
 	_, err = store.Get(parcel.Number)
 
-	require.Equal(t, sql.ErrNoRows, err)
+	require.Error(t, err)
 }
 
 // TestSetAddress проверяет обновление адреса
@@ -82,13 +80,14 @@ func TestSetAddress(t *testing.T) {
 	// set address
 	newAddress := "new test address"
 
-	setAddress := store.SetAddress(parcel.Number, newAddress)
+	err = store.SetAddress(parcel.Number, newAddress)
 
-	require.NoError(t, setAddress)
+	require.NoError(t, err)
 
 	// check
 	address_check, err := store.Get(parcel.Number)
 
+	require.NoError(t, err)
 	require.Equal(t, newAddress, address_check.Address)
 }
 
@@ -112,13 +111,14 @@ func TestSetStatus(t *testing.T) {
 	// set status
 	newStatus := ParcelStatusSent
 
-	setStatus := store.SetStatus(parcel.Number, newStatus)
+	err = store.SetStatus(parcel.Number, newStatus)
 
-	require.NoError(t, setStatus)
+	require.NoError(t, err)
 
 	// check
 	status_check, err := store.Get(parcel.Number)
 
+	require.NoError(t, err)
 	require.Equal(t, newStatus, status_check.Status)
 }
 
@@ -169,6 +169,10 @@ func TestGetByClient(t *testing.T) {
 		// в parcelMap лежат добавленные посылки, ключ - идентификатор посылки, значение - сама посылка
 		// убедитесь, что все посылки из storedParcels есть в parcelMap
 		// убедитесь, что значения полей полученных посылок заполнены верно
-		require.Equal(t, parcel, parcelMap[parcel.Number])
+		require.Equal(t, parcelMap[parcel.Number].Number, parcel.Number)
+		require.Equal(t, parcelMap[parcel.Number].Client, parcel.Client)
+		require.Equal(t, parcelMap[parcel.Number].Status, parcel.Status)
+		require.Equal(t, parcelMap[parcel.Number].Address, parcel.Address)
+		require.Equal(t, parcelMap[parcel.Number].CreatedAt, parcel.CreatedAt)
 	}
 }

@@ -155,7 +155,7 @@ func TestGetByClient(t *testing.T) {
 		parcels[i].Number = id
 
 		// сохраняем добавленную посылку в структуру map, чтобы её можно было легко достать по идентификатору посылки
-		parcelMap[id+10] = parcels[i]
+		parcelMap[id] = parcels[i]
 	}
 
 	// get by client
@@ -166,11 +166,10 @@ func TestGetByClient(t *testing.T) {
 
 	// check
 	for _, parcel := range storedParcels {
-		// в parcelMap лежат добавленные посылки, ключ - идентификатор посылки, значение - сама посылка
-		// убедитесь, что все посылки из storedParcels есть в parcelMap
-		// убедитесь, что значения полей полученных посылок заполнены верно
-		require.Equal(t, parcelMap[parcel.Number].Number, parcel.Number)
-		require.Equal(t, parcelMap[parcel.Number], parcel)
+		//require.Equal(t, parcelMap[parcel.Number].Number, parcel.Number)
+		expectedParcel, ok := parcelMap[parcel.Number]
+		require.True(t, ok)
+		require.Equal(t, expectedParcel, parcel)
 
 	}
 }
